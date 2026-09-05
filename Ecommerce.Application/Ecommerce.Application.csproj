@@ -12,11 +12,13 @@
 
   <ItemGroup>
     <Folder Include="DTOs\" />
+    <Folder Include="Validators\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
 </Project>
