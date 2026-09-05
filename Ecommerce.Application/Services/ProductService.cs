@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Application.DTOs.Product;
+using Ecommerce.Application.Exceptions;
 using Ecommerce.Application.Interfaces;
 using FluentValidation;
 
@@ -25,7 +26,7 @@ namespace Ecommerce.Application.Services
             var validationResult = await _createValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
-                throw new Exceptions.ValidationException(validationResult.Errors);
+                throw new ValidationException(validationResult.Errors);
             }
 
             throw new NotImplementedException(); // আসল logic পরের ধাপে (E4) আসবে
@@ -36,7 +37,7 @@ namespace Ecommerce.Application.Services
             var validationResult = await _updateValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
-                throw new Exceptions.ValidationException(validationResult.Errors);
+                throw new ValidationException(validationResult.Errors);
             }
 
             throw new NotImplementedException(); // আসল logic পরের ধাপে (E4) আসবে
