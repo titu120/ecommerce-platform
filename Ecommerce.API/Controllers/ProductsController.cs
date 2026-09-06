@@ -36,6 +36,13 @@ namespace Ecommerce.API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("price-range")]
+        public async Task<IActionResult> GetByPriceRange([FromQuery] decimal minPrice, [FromQuery] decimal maxPrice)
+        {
+            var products = await _productService.GetProductsByPriceRangeAsync(minPrice, maxPrice);
+            return Ok(products);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

@@ -10,5 +10,6 @@ namespace Ecommerce.Application.Interfaces
         Task<Product?> GetProductWithCategoryAsync(int id);
         Task<IEnumerable<Product>> GetPagedProductsAsync(int pageNumber, int pageSize);
         Task<int> GetTotalProductCountAsync();
+        Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
     }
 }

@@ -27,46 +27,36 @@ namespace Ecommerce.Application.Services
 
         public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
         {
-            // Step 1: Validation
             var validationResult = await _createValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
                 throw new Ecommerce.Application.Exceptions.ValidationException(validationResult.Errors);
             }
 
-            // Step 2: DTO -> Entity
             var product = _mapper.Map<Product>(dto);
 
-            // Step 3: Repository তে Add
             await _unitOfWork.Products.AddAsync(product);
-
-            // Step 4: Database তে Save
             await _unitOfWork.SaveChangesAsync();
 
-            // Step 5: Category সহ আবার লোড করা (যাতে CategoryName ঠিকমতো ম্যাপ হয়)
             var createdProduct = await _unitOfWork.Products.GetProductWithCategoryAsync(product.Id);
 
-            // Step 6: Entity -> DTO, রিটার্ন
             return _mapper.Map<ProductDto>(createdProduct);
         }
 
         public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto dto)
         {
-            // Step 1: Validation
             var validationResult = await _updateValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
                 throw new Ecommerce.Application.Exceptions.ValidationException(validationResult.Errors);
             }
 
-            // Step 2: Product খুঁজে বের করা
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null)
             {
                 throw new Ecommerce.Application.Exceptions.NotFoundException("Product", id);
             }
 
-            // Step 3: Field গুলো আপডেট করা
             product.Name = dto.Name;
             product.Description = dto.Description;
             product.Price = dto.Price;
@@ -74,22 +64,24 @@ namespace Ecommerce.Application.Services
             product.ImageUrl = dto.ImageUrl;
             product.CategoryId = dto.CategoryId;
 
-            // Step 4: Repository তে Update mark করা
             _unitOfWork.Products.Update(product);
-
-            // Step 5: Database তে Save
             await _unitOfWork.SaveChangesAsync();
 
-            // Step 6: Category সহ আবার লোড করা
             var updatedProduct = await _unitOfWork.Products.GetProductWithCategoryAsync(product.Id);
 
-            // Step 7: Entity -> DTO, রিটার্ন
             return _mapper.Map<ProductDto>(updatedProduct);
         }
 
-        public Task DeleteProductAsync(int id)
+        public async Task DeleteProductAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product == null)
+            {
+                throw new Ecommerce.Application.Exceptions.NotFoundException("Product", id);
+            }
+
+            _unitOfWork.Products.Delete(product);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ProductDto> GetProductByIdAsync(int id)
@@ -122,9 +114,16 @@ namespace Ecommerce.Application.Services
             return _mapper.Map<IEnumerable<ProductDto>>(products);
         }
 
-        public Task<IEnumerable<ProductDto>> GetLowStockProductsAsync(int threshold)
+        public async Task<IEnumerable<ProductDto>> GetLowStockProductsAsync(int threshold)
         {
-            throw new NotImplementedException();
+            var products = await _unitOfWork.Products.GetLowStockProductsAsync(threshold);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+        {
+            var products = await _unitOfWork.Products.GetProductsByPriceRangeAsync(minPrice, maxPrice);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
         }
     }
 }

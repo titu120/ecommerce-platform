@@ -56,5 +56,13 @@ namespace Ecommerce.Infrastructure.Repositories
         {
             return await _dbSet.CountAsync();
         }
+
+        public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+        {
+            return await _dbSet
+                .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+                .Include(p => p.Category)
+                .ToListAsync();
+        }
     }
 }
