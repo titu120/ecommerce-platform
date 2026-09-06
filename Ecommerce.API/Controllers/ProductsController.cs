@@ -22,6 +22,13 @@ namespace Ecommerce.API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            return Ok(product);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
         {

@@ -92,9 +92,16 @@ namespace Ecommerce.Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<ProductDto> GetProductByIdAsync(int id)
+        public async Task<ProductDto> GetProductByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _unitOfWork.Products.GetProductWithCategoryAsync(id);
+
+            if (product == null)
+            {
+                throw new Ecommerce.Application.Exceptions.NotFoundException("Product", id);
+            }
+
+            return _mapper.Map<ProductDto>(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
