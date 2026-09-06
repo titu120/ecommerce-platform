@@ -1,4 +1,5 @@
-﻿using Ecommerce.Application.Interfaces;
+﻿using Ecommerce.Application.DTOs.Product;
+using Ecommerce.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
@@ -12,6 +13,13 @@ namespace Ecommerce.API.Controllers
         public ProductsController(IProductService productService)
         {
             _productService = productService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
+        {
+            var product = await _productService.CreateProductAsync(dto);
+            return Ok(product);
         }
     }
 }
