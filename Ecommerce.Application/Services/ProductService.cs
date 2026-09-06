@@ -116,9 +116,10 @@ namespace Ecommerce.Application.Services
             return _mapper.Map<IEnumerable<ProductDto>>(products);
         }
 
-        public Task<IEnumerable<ProductDto>> SearchProductsAsync(string keyword)
+        public async Task<IEnumerable<ProductDto>> SearchProductsAsync(string keyword)
         {
-            throw new NotImplementedException();
+            var products = await _unitOfWork.Products.SearchProductsAsync(keyword);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
         }
 
         public Task<IEnumerable<ProductDto>> GetLowStockProductsAsync(int threshold)
