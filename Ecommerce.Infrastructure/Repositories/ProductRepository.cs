@@ -42,11 +42,18 @@ namespace Ecommerce.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Product>> GetPagedProductsAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<Product>> GetPagedProductsAsync(int pageNumber, int pageSize, string? sortBy, bool isDescending)
         {
-            return await _dbSet
-                .Include(p => p.Category)
-                .OrderBy(p => p.Id)
+            var query = _dbSet.Include(p => p.Category).AsQueryable();
+
+            query = sortBy?.ToLower() switch
+            {
+                "name" => isDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                "price" => isDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+                _ => query.OrderBy(p => p.Id)
+            };
+
+            return await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

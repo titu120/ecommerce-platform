@@ -16,9 +16,13 @@ namespace Ecommerce.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] bool isDescending = false)
         {
-            var products = await _productService.GetAllProductsAsync(pageNumber, pageSize);
+            var products = await _productService.GetAllProductsAsync(pageNumber, pageSize, sortBy, isDescending);
             return Ok(products);
         }
 

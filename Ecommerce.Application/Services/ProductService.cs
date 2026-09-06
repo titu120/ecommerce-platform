@@ -96,9 +96,9 @@ namespace Ecommerce.Application.Services
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize, string? sortBy, bool isDescending)
         {
-            var products = await _unitOfWork.Products.GetPagedProductsAsync(pageNumber, pageSize);
+            var products = await _unitOfWork.Products.GetPagedProductsAsync(pageNumber, pageSize, sortBy, isDescending);
             return _mapper.Map<IEnumerable<ProductDto>>(products);
         }
 
