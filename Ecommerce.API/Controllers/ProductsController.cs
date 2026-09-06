@@ -28,5 +28,12 @@ namespace Ecommerce.API.Controllers
             var product = await _productService.UpdateProductAsync(id, dto);
             return Ok(product);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
+        }
     }
 }
