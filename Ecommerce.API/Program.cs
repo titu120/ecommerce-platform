@@ -30,11 +30,13 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+
 // Unit Of Work — Scoped
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Application Services — Scoped
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
