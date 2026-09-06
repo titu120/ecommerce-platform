@@ -50,9 +50,41 @@ namespace Ecommerce.Application.Services
             return _mapper.Map<ProductDto>(createdProduct);
         }
 
-        public Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto dto)
+        public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto dto)
         {
-            throw new NotImplementedException();
+            // Step 1: Validation
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                throw new Ecommerce.Application.Exceptions.ValidationException(validationResult.Errors);
+            }
+
+            // Step 2: Product খুঁজে বের করা
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product == null)
+            {
+                throw new Ecommerce.Application.Exceptions.NotFoundException("Product", id);
+            }
+
+            // Step 3: Field গুলো আপডেট করা
+            product.Name = dto.Name;
+            product.Description = dto.Description;
+            product.Price = dto.Price;
+            product.StockQuantity = dto.StockQuantity;
+            product.ImageUrl = dto.ImageUrl;
+            product.CategoryId = dto.CategoryId;
+
+            // Step 4: Repository তে Update mark করা
+            _unitOfWork.Products.Update(product);
+
+            // Step 5: Database তে Save
+            await _unitOfWork.SaveChangesAsync();
+
+            // Step 6: Category সহ আবার লোড করা
+            var updatedProduct = await _unitOfWork.Products.GetProductWithCategoryAsync(product.Id);
+
+            // Step 7: Entity -> DTO, রিটার্ন
+            return _mapper.Map<ProductDto>(updatedProduct);
         }
 
         public Task DeleteProductAsync(int id)
