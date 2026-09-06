@@ -1,7 +1,11 @@
-using Ecommerce.Application.Mappings;
 using Ecommerce.Application.Interfaces;
+using Ecommerce.Application.Mappings;
 using Ecommerce.Application.Services;
+using Ecommerce.Infrastructure.Persistence;
+using Ecommerce.Infrastructure.Repositories;
+using Ecommerce.Infrastructure.UnitOfWork;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +17,24 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
 
-// FluentValidation — এই Assembly তে থাকা সব Validator ক্লাস auto-register হবে
 builder.Services.AddValidatorsFromAssembly(typeof(MappingProfile).Assembly);
+
+// Database
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Repositories — Scoped
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Unit Of Work — Scoped
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Application Services — Scoped
 builder.Services.AddScoped<IProductService, ProductService>();
-
-// ⚠️ IUnitOfWork এখনো register করা হয়নি — Infrastructure layer (E3) বানানোর পর যোগ হবে:
-// builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
