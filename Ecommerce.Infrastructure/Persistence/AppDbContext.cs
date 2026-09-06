@@ -26,7 +26,7 @@ namespace Ecommerce.Infrastructure.Persistence
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict); // Category delete হলে Product auto-delete হবে না
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
@@ -43,7 +43,7 @@ namespace Ecommerce.Infrastructure.Persistence
                 .HasOne(ci => ci.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(ci => ci.CartId)
-                .OnDelete(DeleteBehavior.Cascade); // Cart delete হলে CartItems ও delete হবে
+                .OnDelete(DeleteBehavior.Cascade);
 
             // ---------- CartItem - Product (Many-to-One) ----------
             modelBuilder.Entity<CartItem>()
@@ -63,4 +63,28 @@ namespace Ecommerce.Infrastructure.Persistence
                 .Property(o => o.TotalAmount)
                 .HasColumnType("decimal(18,2)");
 
-            // ---------- Order
+            // ---------- Order - OrderItem (One-to-Many) ----------
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ---------- OrderItem - Product (Many-to-One) ----------
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(oi => oi.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+
+            // ---------- User Email Unique ----------
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
+    }
+}
