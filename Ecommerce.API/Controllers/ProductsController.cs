@@ -15,6 +15,13 @@ namespace Ecommerce.API.Controllers
             _productService = productService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var products = await _productService.GetAllProductsAsync(pageNumber, pageSize);
+            return Ok(products);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
         {

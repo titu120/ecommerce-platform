@@ -41,5 +41,20 @@ namespace Ecommerce.Infrastructure.Repositories
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        public async Task<IEnumerable<Product>> GetPagedProductsAsync(int pageNumber, int pageSize)
+        {
+            return await _dbSet
+                .Include(p => p.Category)
+                .OrderBy(p => p.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetTotalProductCountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
     }
 }
