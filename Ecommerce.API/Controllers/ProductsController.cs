@@ -47,6 +47,13 @@ namespace Ecommerce.API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("low-stock")]
+        public async Task<IActionResult> GetLowStock([FromQuery] int threshold = 10)
+        {
+            var products = await _productService.GetLowStockProductsAsync(threshold);
+            return Ok(products);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

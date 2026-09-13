@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Application.DTOs.Category;
 using Ecommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
@@ -30,6 +31,7 @@ namespace Ecommerce.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
             var category = await _categoryService.CreateCategoryAsync(dto);
@@ -37,6 +39,7 @@ namespace Ecommerce.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
             var category = await _categoryService.UpdateCategoryAsync(id, dto);
@@ -44,6 +47,7 @@ namespace Ecommerce.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.DeleteCategoryAsync(id);
