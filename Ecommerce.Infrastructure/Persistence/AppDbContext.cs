@@ -16,12 +16,13 @@ namespace Ecommerce.Infrastructure.Persistence
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ---------- Product - Category (One-to-Many) ----------
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
@@ -32,27 +33,23 @@ namespace Ecommerce.Infrastructure.Persistence
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
 
-            // ---------- User - Cart (One-to-One) ----------
             modelBuilder.Entity<Cart>()
                 .HasOne(c => c.User)
                 .WithOne(u => u.Cart)
                 .HasForeignKey<Cart>(c => c.UserId);
 
-            // ---------- Cart - CartItem (One-to-Many) ----------
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(ci => ci.CartId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ---------- CartItem - Product (Many-to-One) ----------
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Product)
                 .WithMany()
                 .HasForeignKey(ci => ci.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ---------- User - Order (One-to-Many) ----------
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)
                 .WithMany(u => u.Orders)
@@ -63,14 +60,12 @@ namespace Ecommerce.Infrastructure.Persistence
                 .Property(o => o.TotalAmount)
                 .HasColumnType("decimal(18,2)");
 
-            // ---------- Order - OrderItem (One-to-Many) ----------
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ---------- OrderItem - Product (Many-to-One) ----------
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Product)
                 .WithMany()
@@ -81,9 +76,39 @@ namespace Ecommerce.Infrastructure.Persistence
                 .Property(oi => oi.UnitPrice)
                 .HasColumnType("decimal(18,2)");
 
-            // ---------- User Email Unique ----------
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
+                .IsUnique();
+
+            // ---------- Review ----------
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Product)
+                .WithMany()
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ---------- Wishlist ----------
+            modelBuilder.Entity<Wishlist>()
+                .HasOne(w => w.User)
+                .WithMany()
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Wishlist>()
+                .HasOne(w => w.Product)
+                .WithMany()
+                .HasForeignKey(w => w.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // একই User একই Product একবারই Wishlist এ যোগ করতে পারবে
+            modelBuilder.Entity<Wishlist>()
+                .HasIndex(w => new { w.UserId, w.ProductId })
                 .IsUnique();
         }
     }

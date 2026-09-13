@@ -8,6 +8,8 @@
         ICartRepository Carts { get; }
         ICartItemRepository CartItems { get; }
         IUserRepository Users { get; }
+        IReviewRepository Reviews { get; }
+        IWishlistRepository Wishlists { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

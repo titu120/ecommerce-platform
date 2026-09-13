@@ -16,6 +16,8 @@ namespace Ecommerce.Infrastructure.UnitOfWork
         private ICartRepository? _carts;
         private ICartItemRepository? _cartItems;
         private IUserRepository? _users;
+        private IReviewRepository? _reviews;
+        private IWishlistRepository? _wishlists;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -39,6 +41,12 @@ namespace Ecommerce.Infrastructure.UnitOfWork
 
         public IUserRepository Users =>
             _users ??= new UserRepository(_context);
+
+        public IReviewRepository Reviews =>
+            _reviews ??= new ReviewRepository(_context);
+
+        public IWishlistRepository Wishlists =>
+            _wishlists ??= new WishlistRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {
