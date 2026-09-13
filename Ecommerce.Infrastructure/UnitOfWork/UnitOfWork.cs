@@ -12,6 +12,7 @@ namespace Ecommerce.Infrastructure.UnitOfWork
         private ICategoryRepository? _categories;
         private IOrderRepository? _orders;
         private ICartRepository? _carts;
+        private ICartItemRepository? _cartItems;
         private IUserRepository? _users;
 
         public UnitOfWork(AppDbContext context)
@@ -30,6 +31,9 @@ namespace Ecommerce.Infrastructure.UnitOfWork
 
         public ICartRepository Carts =>
             _carts ??= new CartRepository(_context);
+
+        public ICartItemRepository CartItems =>
+            _cartItems ??= new CartItemRepository(_context);
 
         public IUserRepository Users =>
             _users ??= new UserRepository(_context);
